@@ -1,0 +1,45 @@
+#!/usr/bin/env guile -e main -s
+!#
+(use-modules
+ (ice-9 rdelim)
+ (ice-9 regex)
+ (srfi srfi-1))
+
+(define (string-replace-regex str reg new)
+  (let
+      ((m (string-match reg str)))
+    (cond
+     ((eq? m #f) str)
+     (#t
+      (let
+          ((substring-position
+            (string-contains
+             str
+             (match:substring m))))
+        (string-replace
+         str
+         new
+         substring-position
+         (+
+          substring-position
+          (string-length (match:substring m)))))))))
+
+(define (main args)
+  (eval
+   (let
+       ((reg (cadr args))
+        (new (caddr args))
+        (lines
+         (let
+             ((split-lines
+               (string-split (read-delimited "") #\newline)))
+           (cond
+            ((string-null? (last split-lines)) (drop-right split-lines 1))
+            (#t split-lines)))))
+     `(map
+       (lambda (line)
+         (display
+          (string-replace-regex line ,reg ,new))
+         (newline))
+       (quote ,lines)))
+   (interaction-environment)))

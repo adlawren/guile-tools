@@ -1,0 +1,15 @@
+#!/usr/bin/env guile -e main -s
+!#
+(use-modules (ice-9 rdelim))
+
+(define (main args)
+  (eval
+   (let
+       ((expr
+         (with-input-from-string
+             (cadr args)
+           (lambda () (read))))
+        (text (read-delimited "")))
+     `((lambda (t) (display t))
+       (,expr (quote ,text))))
+   (interaction-environment)))

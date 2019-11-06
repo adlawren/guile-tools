@@ -1,0 +1,24 @@
+#!/usr/bin/env guile -e main -s
+!#
+(use-modules
+ (ice-9 rdelim)
+ (srfi srfi-1))
+
+(define (main args)
+  (eval
+   (let
+       ((expr
+         (with-input-from-string
+             (cadr args)
+           (lambda () (read))))
+        (lines
+         (let
+             ((split-lines
+               (string-split (read-delimited "") #\newline)))
+           (cond
+            ((string-null? (last split-lines)) (drop-right split-lines 1))
+            (#t split-lines)))))
+     `(map
+       (lambda (line) (display (,expr line)) (newline))
+       (quote ,lines)))
+   (interaction-environment)))

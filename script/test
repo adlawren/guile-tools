@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+OUT=$(printf "test\narst\n" | ./glist "reverse" | ./gmap "string-reverse" | ./glist "reverse" | ./gfilter "(lambda (l) #t)" | ./glist reverse | ./gjoin "," | ./gtext "(lambda (t) (string-join (string-split t #\,) \"\\n\"))" | ./gsub "ts" "" | ./glist reverse)
+EXPECTED_OUT="et
+ra"
+
+if [ "${OUT}" = "${EXPECTED_OUT}" ]
+then
+  echo "Test passed"
+else
+  echo "Test failed"
+fi
