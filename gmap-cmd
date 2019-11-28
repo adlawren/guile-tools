@@ -8,8 +8,7 @@
 (define (main args)
   (eval
    (let
-       ((reg (cadr args))
-        (new (caddr args))
+       ((cmd (cadr args))
         (lines
          (let
              ((split-lines
@@ -19,14 +18,25 @@
             (#t split-lines)))))
      `(map
        (lambda (line)
-         (display
-          (regexp-substitute/global
-           #f
-           ,reg
-           line
-           'pre
-           ,new
-           'post))
-         (newline))
+         (apply
+          system*
+          (string-split
+           (regexp-substitute/global
+            #f
+            "[[:space:]]+"
+            (simple-format
+             #f
+             (regexp-substitute/global
+              #f
+              "[{][}]"
+              ,cmd
+              'pre
+              "~a"
+              'post)
+             line)
+            'pre
+            " "
+            'post)
+           #\space)))
        (quote ,lines)))
    (interaction-environment)))
